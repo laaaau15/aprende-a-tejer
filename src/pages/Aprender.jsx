@@ -11,8 +11,9 @@ export function AprenderHub() {
   return (
     <div>
       <PageHeader title="Aprender" emoji="🎓" subtitle="Un recorrido guiado, nivel a nivel." />
-      <div className="mb-6">
+      <div className="mb-6 grid sm:grid-cols-2 gap-3">
         <NavCard to="/mi-lana" emoji="🧶" title="¿Qué puedo hacer con mi lana?" text="Cuéntanos cuánta lana tienes y te decimos qué te da para tejer, con qué agujas y cuántos ovillos." />
+        <NavCard to="/agujas/crear" emoji="🧮" title="Patrón a dos agujas para mi hilo" text="Genera un gorro, bufanda o cuello a partir de tu tensión real." />
       </div>
       <div className="space-y-4">
         {LEVELS.map((level) => {

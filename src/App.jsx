@@ -6,6 +6,7 @@ import { PuntosList, PuntoDetail } from './pages/Puntos'
 import { AprenderHub, LessonDetail } from './pages/Aprender'
 import GanchilloHub from './pages/Ganchillo'
 import GanchilloCrear from './pages/GanchilloCrear'
+import AgujasCrear from './pages/AgujasCrear'
 import Diccionario from './pages/Diccionario'
 import MiLana from './pages/MiLana'
 import Contador from './pages/Contador'
@@ -23,6 +24,7 @@ const routes = [
   ['/aprender/proyecto/:id', LessonDetail],
   ['/ganchillo', GanchilloHub],
   ['/ganchillo/crear', GanchilloCrear],
+  ['/agujas/crear', AgujasCrear],
   ['/diccionario', Diccionario],
   ['/mi-lana', MiLana],
   ['/contador', Contador],

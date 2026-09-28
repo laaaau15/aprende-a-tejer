@@ -4,7 +4,8 @@ import { StitchSwatch } from '../components/StitchSwatch'
 import { GarmentIllustration } from '../components/GarmentIllustration'
 import { addPattern } from '../store'
 import { navigate, useQuery } from '../router'
-import { gaugeFromCounts, generateHatPattern, generateScarfPattern, generateCowlPattern } from '../lib/yarnPatternEngine'
+import { gaugeFromCounts } from '../lib/yarnPatternEngine'
+import { generateHatPatternKnit, generateScarfPatternKnit, generateCowlPatternKnit } from '../lib/knitPatternEngine'
 
 const PROJECTS = [
   { id: 'gorro', label: 'Gorro', emoji: '🧢' },
@@ -13,25 +14,25 @@ const PROJECTS = [
 ]
 
 function PreciseGaugeForm({ gauge, setGauge }) {
-  const [stitches, setStitches] = useState(gauge?.stitches ?? 14)
-  const [rows, setRows] = useState(gauge?.rows ?? 16)
+  const [stitches, setStitches] = useState(gauge?.stitches ?? 18)
+  const [rows, setRows] = useState(gauge?.rows ?? 24)
   const [swatchSize, setSwatchSize] = useState(gauge?.swatchSizeCm ?? 10)
-  const [hookMm, setHookMm] = useState(gauge?.hookMm ?? 4)
+  const [needleMm, setNeedleMm] = useState(gauge?.needleMm ?? 4.5)
 
   React.useEffect(() => {
     const g = gaugeFromCounts({ stitches: Number(stitches), rows: Number(rows), swatchSizeCm: Number(swatchSize) })
-    setGauge({ ...g, stitches: Number(stitches), rows: Number(rows), swatchSizeCm: Number(swatchSize), hookMm: Number(hookMm) })
+    setGauge({ ...g, stitches: Number(stitches), rows: Number(rows), swatchSizeCm: Number(swatchSize), needleMm: Number(needleMm) })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stitches, rows, swatchSize, hookMm])
+  }, [stitches, rows, swatchSize, needleMm])
 
   return (
     <div className="card space-y-4">
       <div className="flex gap-4 items-center">
-        <StitchSwatch kind="sc" tone="yarn" className="h-20 w-20 rounded-lg shrink-0" />
+        <StitchSwatch kind="knit" tone="sage" className="h-20 w-20 rounded-lg shrink-0" />
         <ol className="text-sm text-plum/70 list-decimal list-inside space-y-1">
-          <li>Teje un cuadrado en punto bajo (o el punto que vayas a usar) de al menos 12x12cm, con tu hilo y tu ganchillo.</li>
-          <li>Déjalo reposar un momento y mídelo sin estirarlo.</li>
-          <li>Marca un cuadrado interior de {swatchSize}x{swatchSize}cm (para evitar los bordes) y cuenta los puntos y vueltas dentro.</li>
+          <li>Teje una muestra en punto jersey de al menos 12x12cm, con tu hilo y tus agujas.</li>
+          <li>Bloquéala (o déjala reposar) y mídela sin estirarla.</li>
+          <li>Marca un cuadrado interior de {swatchSize}x{swatchSize}cm y cuenta puntos y vueltas dentro.</li>
         </ol>
       </div>
       <div className="grid sm:grid-cols-2 gap-3">
@@ -48,8 +49,8 @@ function PreciseGaugeForm({ gauge, setGauge }) {
           <input type="number" min="5" className="field mt-1" value={swatchSize} onChange={(e) => setSwatchSize(e.target.value)} />
         </label>
         <label className="text-sm font-semibold">
-          Ganchillo usado (mm)
-          <input type="number" step="0.25" min="1" className="field mt-1" value={hookMm} onChange={(e) => setHookMm(e.target.value)} />
+          Agujas usadas (mm)
+          <input type="number" step="0.25" min="1" className="field mt-1" value={needleMm} onChange={(e) => setNeedleMm(e.target.value)} />
         </label>
       </div>
       {gauge ? (
@@ -61,42 +62,34 @@ function PreciseGaugeForm({ gauge, setGauge }) {
   )
 }
 
-function ResultHat({ result }) {
+function ResultSections({ result }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <TipCard tone="sky" emoji="📐">
-        Contorno objetivo: {result.summary.targetCircumferenceCm}cm · {result.summary.targetStitches} puntos en el cuerpo ·
-        altura estimada final: {result.summary.estimatedHeightCm}cm en {result.summary.totalRounds} vueltas.
+        {result.type === 'gorro'
+          ? `Monta ${result.summary.castOn} puntos · contorno ${result.summary.targetCircumferenceCm}cm · altura total ${result.summary.totalHeightCm}cm.`
+          : result.type === 'bufanda'
+          ? `Monta ${result.summary.castOn} puntos · medidas estimadas ${result.summary.estimatedWidthCm}cm x ${result.summary.estimatedLengthCm}cm.`
+          : `Monta ${result.summary.castOn} puntos · contorno ${result.summary.estimatedCircumferenceCm}cm x altura ${result.summary.estimatedHeightCm}cm.`}
       </TipCard>
-      <ol className="space-y-2">
-        {result.rounds.map((r, i) => (
-          <li key={i} className="text-sm">
-            <strong>Vuelta {r.n}:</strong> {r.text}
-          </li>
-        ))}
-      </ol>
+      {result.sections.map((sec, i) => (
+        <div key={i}>
+          <h3 className="font-bold mb-1">{sec.title}</h3>
+          {sec.text ? <p className="text-sm text-plum/80">{sec.text}</p> : null}
+          {sec.steps ? (
+            <ol className="mt-2 space-y-1">
+              {sec.steps.map((s, j) => (
+                <li key={j} className="text-sm">— {s.text}</li>
+              ))}
+            </ol>
+          ) : null}
+        </div>
+      ))}
     </div>
   )
 }
 
-function ResultFlat({ result }) {
-  return (
-    <div className="space-y-3">
-      <TipCard tone="sky" emoji="📐">
-        {result.type === 'bufanda'
-          ? `Medidas estimadas: ${result.summary.estimatedWidthCm}cm x ${result.summary.estimatedLengthCm}cm.`
-          : `Medidas estimadas: contorno ${result.summary.estimatedCircumferenceCm}cm x altura ${result.summary.estimatedHeightCm}cm.`}
-      </TipCard>
-      <ol className="space-y-2">
-        {result.steps.map((s, i) => (
-          <li key={i} className="text-sm"><strong>{s.n === 0 ? 'Base:' : `Vueltas ${s.n}:`}</strong> {s.text}</li>
-        ))}
-      </ol>
-    </div>
-  )
-}
-
-export default function GanchilloCrear() {
+export default function AgujasCrear() {
   const query = useQuery()
   const [gauge, setGauge] = useState(null)
   const [project, setProject] = useState(PROJECTS.some((p) => p.id === query.project) ? query.project : 'gorro')
@@ -112,17 +105,17 @@ export default function GanchilloCrear() {
   const result = useMemo(() => {
     if (!gauge) return null
     if (project === 'gorro') {
-      return generateHatPattern({ gauge, headCircumferenceCm: Number(headCircumference), heightCm: Number(hatHeight) })
+      return generateHatPatternKnit({ gauge, headCircumferenceCm: Number(headCircumference), heightCm: Number(hatHeight) })
     }
     if (project === 'bufanda') {
-      return generateScarfPattern({ gauge, widthCm: Number(scarfWidth), lengthCm: Number(scarfLength) })
+      return generateScarfPatternKnit({ gauge, widthCm: Number(scarfWidth), lengthCm: Number(scarfLength) })
     }
-    return generateCowlPattern({ gauge, circumferenceCm: Number(cowlCircumference), heightCm: Number(cowlHeight) })
+    return generateCowlPatternKnit({ gauge, circumferenceCm: Number(cowlCircumference), heightCm: Number(cowlHeight) })
   }, [gauge, project, headCircumference, hatHeight, scarfWidth, scarfLength, cowlCircumference, cowlHeight])
 
   function handleSave() {
     if (!result) return
-    addPattern({ id: `${project}-${Date.now()}`, project, mode: 'preciso', gauge, result, createdAt: Date.now() })
+    addPattern({ id: `${project}-agujas-${Date.now()}`, project, technique: 'agujas', mode: 'preciso', gauge, result, createdAt: Date.now() })
     setSaved(true)
     setTimeout(() => navigate('/favoritos'), 600)
   }
@@ -130,10 +123,10 @@ export default function GanchilloCrear() {
   return (
     <div>
       <PageHeader
-        title="Patrón de ganchillo para mi hilo"
-        emoji="🪡"
-        backTo="/ganchillo"
-        subtitle="Para que el patrón sea 100% fiable a tu hilo y a tu forma de tejer, se calcula siempre a partir de una muestra real de tensión — nunca de una estimación por grosor."
+        title="Patrón a dos agujas para mi hilo"
+        emoji="🧶"
+        backTo="/aprender"
+        subtitle="Igual que en ganchillo: para que el patrón sea 100% fiable, se calcula siempre a partir de una muestra real de tensión."
       />
 
       <div className="space-y-6">
@@ -196,8 +189,8 @@ export default function GanchilloCrear() {
         {result ? (
           <div className="card">
             <h2 className="font-display text-xl font-semibold mb-3">Tu patrón</h2>
-            <GarmentIllustration garment={project} kind="sc" tone="yarn" className="w-full h-40 mb-4" />
-            {project === 'gorro' ? <ResultHat result={result} /> : <ResultFlat result={result} />}
+            <GarmentIllustration garment={project} kind="knit" tone="sage" className="w-full h-40 mb-4" />
+            <ResultSections result={result} />
             <button type="button" className="btn-primary mt-4" onClick={handleSave}>
               {saved ? '✅ Guardado' : '💾 Guardar este patrón'}
             </button>

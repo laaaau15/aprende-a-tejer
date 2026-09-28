@@ -4,7 +4,7 @@ import React from 'react'
 // tileable. No son fotografías (no podemos alojar fotos de terceros de forma
 // fiable), pero representan con precisión la estructura real de cada punto:
 // las "uves" del derecho, los granitos del revés, las columnas del elástico, etc.
-const PALETTES = {
+export const PALETTES = {
   yarn: { bg: '#FBF6EE', line: '#A83F2E', accent: '#D9705F' },
   sage: { bg: '#F1F6F1', line: '#3F5F45', accent: '#7FA285' },
   honey: { bg: '#FCF3E3', line: '#8C5E14', accent: '#E3A857' }
@@ -84,7 +84,7 @@ function CrochetDc({ id, color }) {
   )
 }
 
-const KIND_RENDER = {
+export const KIND_RENDER = {
   knit: KnitV,
   purl: PurlBump,
   rib1x1: (p) => <Rib {...p} width={2} />,
