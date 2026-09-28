@@ -9,6 +9,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: false, // registramos el SW nosotros mismos en src/main.jsx
       includeAssets: ['favicon.svg', 'robots.txt', 'icons/*.png'],
       manifest: {
         id: '/aprende-a-tejer/',
@@ -30,13 +31,11 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         navigateFallback: '/aprende-a-tejer/index.html',
-        runtimeCaching: [
-          {
-            urlPattern: ({ url }) => url.pathname.startsWith('/aprende-a-tejer/'),
-            handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'app-shell' }
-          }
-        ]
+        // Que una versión nueva tome el control enseguida (sin quedarse "una
+        // versión por detrás" hasta la segunda recarga).
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true
       }
     })
   ]
