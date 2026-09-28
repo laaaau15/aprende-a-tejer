@@ -1,14 +1,19 @@
 import React from 'react'
 import { Link } from '../router'
-import { PageHeader, ProgressBar, LearnedToggle } from '../components/ui'
+import { PageHeader, ProgressBar, LearnedToggle, TipCard, NavCard } from '../components/ui'
+import { VideoEmbed } from '../components/VideoEmbed'
 import { useStore } from '../store'
 import { LEVELS, findLesson } from '../data/lessons'
+import { findVideo } from '../data/videos'
 
 export function AprenderHub() {
   const state = useStore()
   return (
     <div>
       <PageHeader title="Aprender" emoji="🎓" subtitle="Un recorrido guiado, nivel a nivel." />
+      <div className="mb-6">
+        <NavCard to="/mi-lana" emoji="🧶" title="¿Qué puedo hacer con mi lana?" text="Cuéntanos cuánta lana tienes y te decimos qué te da para tejer, con qué agujas y cuántos ovillos." />
+      </div>
       <div className="space-y-4">
         {LEVELS.map((level) => {
           const done = level.lessons.filter((l) => state.learned[l.id]).length
@@ -44,10 +49,24 @@ export function AprenderHub() {
 export function LessonDetail({ params }) {
   const lesson = findLesson(params.id)
   if (!lesson) return <div className="p-8 text-center">No encontramos esa lección.</div>
+  const video = findVideo(lesson.id)
   return (
     <div>
       <PageHeader title={lesson.title} emoji={lesson.emoji} backTo="/aprender" subtitle={`Nivel: ${lesson.level.name}`} />
       <LearnedToggle learnKey={lesson.id} />
+
+      {video ? (
+        <div className="mt-6">
+          <h2 className="font-bold mb-2">🎬 Míralo en vídeo</h2>
+          <VideoEmbed videoId={video.videoId} title={video.title} />
+          <p className="text-xs text-plum/50 mt-1">{video.title} — {video.channel}</p>
+        </div>
+      ) : (
+        <TipCard tone="honey" emoji="🚧">
+          Todavía no tenemos un vídeo enlazado para esta técnica. ¿Te ayudamos a buscarlo en YouTube?
+        </TipCard>
+      )}
+
       <div className="card mt-6">
         <p className="text-plum/70">
           Contenido detallado de esta técnica próximamente. Mientras tanto, márcala como aprendida

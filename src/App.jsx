@@ -7,6 +7,7 @@ import { AprenderHub, LessonDetail } from './pages/Aprender'
 import GanchilloHub from './pages/Ganchillo'
 import GanchilloCrear from './pages/GanchilloCrear'
 import Diccionario from './pages/Diccionario'
+import MiLana from './pages/MiLana'
 import Contador from './pages/Contador'
 import Favoritos from './pages/Favoritos'
 import Buscar from './pages/Buscar'
@@ -23,6 +24,7 @@ const routes = [
   ['/ganchillo', GanchilloHub],
   ['/ganchillo/crear', GanchilloCrear],
   ['/diccionario', Diccionario],
+  ['/mi-lana', MiLana],
   ['/contador', Contador],
   ['/aprender/calculadora', Contador],
   ['/favoritos', Favoritos],

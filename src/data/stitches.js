@@ -138,6 +138,40 @@ export function findStitch(id) {
   return STITCHES.find((s) => s.id === id)
 }
 
+// Qué ilustración de textura (StitchSwatch) y tono de color usar por punto.
+export const SWATCH_KIND = {
+  'punto-derecho': ['knit', 'yarn'],
+  'punto-reves': ['purl', 'sage'],
+  'punto-bobo': ['purl', 'honey'],
+  'punto-jersey': ['knit', 'yarn'],
+  'jersey-reves': ['purl', 'sage'],
+  'elastico-1x1': ['rib1x1', 'yarn'],
+  'elastico-2x2': ['rib2x2', 'sage'],
+  'punto-arroz': ['seed', 'honey'],
+  'falso-arroz': ['seed', 'honey'],
+  'punto-musgo': ['seed', 'sage'],
+  'punto-ingles': ['rib2x2', 'yarn'],
+  'punto-brioche': ['purl', 'honey'],
+  'arroz-doble': ['seed', 'yarn'],
+  'punto-semilla': ['seed', 'honey'],
+  'punto-espiga': ['cable', 'sage'],
+  'punto-retorcido': ['knit', 'sage'],
+  'punto-cesta': ['rib2x2', 'honey'],
+  trenzas: ['cable', 'yarn'],
+  calados: ['lace', 'sage'],
+  encajes: ['lace', 'honey'],
+  jacquard: ['seed', 'yarn'],
+  'fair-isle': ['seed', 'sage'],
+  intarsia: ['seed', 'honey'],
+  texturizados: ['cable', 'sage'],
+  'vueltas-cortas': ['knit', 'honey'],
+  'brioche-avanzado': ['purl', 'yarn']
+}
+
+export function getSwatchKind(id) {
+  return SWATCH_KIND[id] ?? ['knit', 'yarn']
+}
+
 // --- Diccionario de abreviaturas de ganchillo: español / US / UK ----------
 // La terminología US y UK nombra puntos distintos con la misma palabra
 // (p. ej. "double crochet" no es el mismo punto en US que en UK), una de

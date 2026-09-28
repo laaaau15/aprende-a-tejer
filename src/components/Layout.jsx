@@ -18,16 +18,16 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-20 bg-cream/90 backdrop-blur border-b border-oat">
+      <header className="sticky top-0 z-20 bg-cream/80 backdrop-blur-md border-b border-oat/70">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="font-display text-xl font-semibold">Aprende a tejer 🧶</Link>
+          <Link to="/" className="font-display text-xl font-semibold text-gradient">Aprende a tejer 🧶</Link>
           <nav className="hidden md:flex gap-1">
             {NAV.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
-                className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
-                  path === item.to ? 'bg-yarn-dark text-white' : 'hover:bg-oat/70'
+                className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                  path === item.to ? 'btn-primary !py-1.5' : 'hover:bg-oat/70'
                 }`}
               >
                 {item.emoji} {item.label}

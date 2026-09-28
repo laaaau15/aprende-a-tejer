@@ -10,6 +10,7 @@ export const YARN_WEIGHTS = [
     name: 'Lace (hilo de encaje)',
     metersPer100g: [800, 1600],
     hookMm: [1.5, 2.25],
+    needleMm: [1.5, 2.25],
     scPer10cm: [32, 42]
   },
   {
@@ -17,6 +18,7 @@ export const YARN_WEIGHTS = [
     name: 'Fino / Superfino (calcetín, fingering, bebé)',
     metersPer100g: [400, 800],
     hookMm: [2.25, 3.5],
+    needleMm: [2.25, 3.25],
     scPer10cm: [27, 32]
   },
   {
@@ -24,6 +26,7 @@ export const YARN_WEIGHTS = [
     name: 'Fino (sport, bebé grueso)',
     metersPer100g: [300, 400],
     hookMm: [3.5, 4.5],
+    needleMm: [3.25, 3.75],
     scPer10cm: [22, 26]
   },
   {
@@ -31,6 +34,7 @@ export const YARN_WEIGHTS = [
     name: 'Ligero (DK, worsted ligero)',
     metersPer100g: [200, 300],
     hookMm: [4.5, 5.5],
+    needleMm: [3.75, 4.5],
     scPer10cm: [16, 20]
   },
   {
@@ -38,6 +42,7 @@ export const YARN_WEIGHTS = [
     name: 'Medio (worsted, aran)',
     metersPer100g: [150, 200],
     hookMm: [5.5, 6.5],
+    needleMm: [4.5, 5.5],
     scPer10cm: [12, 17]
   },
   {
@@ -45,6 +50,7 @@ export const YARN_WEIGHTS = [
     name: 'Grueso (chunky, bulky)',
     metersPer100g: [100, 150],
     hookMm: [6.5, 9],
+    needleMm: [5.5, 8],
     scPer10cm: [8, 11]
   },
   {
@@ -52,6 +58,7 @@ export const YARN_WEIGHTS = [
     name: 'Muy grueso (super bulky)',
     metersPer100g: [50, 100],
     hookMm: [9, 15],
+    needleMm: [8, 12.75],
     scPer10cm: [5, 9]
   },
   {
@@ -59,6 +66,7 @@ export const YARN_WEIGHTS = [
     name: 'Jumbo',
     metersPer100g: [0, 50],
     hookMm: [15, 25],
+    needleMm: [12.75, 25],
     scPer10cm: [3, 6]
   }
 ]

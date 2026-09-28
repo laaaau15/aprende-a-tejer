@@ -1,51 +1,15 @@
 import React, { useMemo, useState } from 'react'
 import { PageHeader, TipCard } from '../components/ui'
+import { StitchSwatch } from '../components/StitchSwatch'
 import { addPattern } from '../store'
 import { navigate } from '../router'
-import {
-  gaugeFromCounts,
-  generateHatPattern,
-  generateScarfPattern,
-  generateCowlPattern,
-  buildGaugeWarning
-} from '../lib/yarnPatternEngine'
-import { YARN_WEIGHTS, estimateGaugeFromCategory, weightCategoryFromMeters } from '../data/yarnWeights'
+import { gaugeFromCounts, generateHatPattern, generateScarfPattern, generateCowlPattern } from '../lib/yarnPatternEngine'
 
 const PROJECTS = [
   { id: 'gorro', label: 'Gorro', emoji: '🧢' },
   { id: 'bufanda', label: 'Bufanda', emoji: '🧣' },
   { id: 'cuello', label: 'Cuello / snood', emoji: '⭕' }
 ]
-
-function GaugeModePicker({ mode, setMode }) {
-  return (
-    <div className="grid sm:grid-cols-2 gap-3">
-      <button
-        type="button"
-        onClick={() => setMode('preciso')}
-        className={`card text-left ${mode === 'preciso' ? 'ring-2 ring-sage-dark' : ''}`}
-      >
-        <div className="font-bold">🎯 Muestra real (recomendado)</div>
-        <p className="text-sm text-plum/70 mt-1">
-          Tejes un cuadrado de 10x10cm con tu hilo y tu ganchillo, cuentas los puntos y las vueltas,
-          y el patrón se calcula sobre <strong>tu tensión real</strong>. Es la única forma de que el
-          resultado sea 100% fiable a tu forma de tejer.
-        </p>
-      </button>
-      <button
-        type="button"
-        onClick={() => setMode('estimado')}
-        className={`card text-left ${mode === 'estimado' ? 'ring-2 ring-yarn-dark' : ''}`}
-      >
-        <div className="font-bold">⚡ Estimado por grosor de hilo</div>
-        <p className="text-sm text-plum/70 mt-1">
-          Más rápido: solo indicas el grosor de tu hilo. Usamos una tensión típica de ese grosor,
-          pero <strong>no es tu tensión real</strong> — puede que tengas que ajustar el patrón sobre la marcha.
-        </p>
-      </button>
-    </div>
-  )
-}
 
 function PreciseGaugeForm({ gauge, setGauge }) {
   const [stitches, setStitches] = useState(gauge?.stitches ?? 14)
@@ -61,11 +25,14 @@ function PreciseGaugeForm({ gauge, setGauge }) {
 
   return (
     <div className="card space-y-4">
-      <ol className="text-sm text-plum/70 list-decimal list-inside space-y-1">
-        <li>Teje un cuadrado en punto bajo (o el punto que vayas a usar) de al menos 12x12cm, con tu hilo y tu ganchillo.</li>
-        <li>Déjalo reposar un momento y mídelo sin estirarlo.</li>
-        <li>Marca un cuadrado interior de {swatchSize}x{swatchSize}cm (para evitar los bordes) y cuenta los puntos y vueltas dentro.</li>
-      </ol>
+      <div className="flex gap-4 items-center">
+        <StitchSwatch kind="sc" tone="yarn" className="h-20 w-20 rounded-lg shrink-0" />
+        <ol className="text-sm text-plum/70 list-decimal list-inside space-y-1">
+          <li>Teje un cuadrado en punto bajo (o el punto que vayas a usar) de al menos 12x12cm, con tu hilo y tu ganchillo.</li>
+          <li>Déjalo reposar un momento y mídelo sin estirarlo.</li>
+          <li>Marca un cuadrado interior de {swatchSize}x{swatchSize}cm (para evitar los bordes) y cuenta los puntos y vueltas dentro.</li>
+        </ol>
+      </div>
       <div className="grid sm:grid-cols-2 gap-3">
         <label className="text-sm font-semibold">
           Puntos en {swatchSize}cm
@@ -87,55 +54,6 @@ function PreciseGaugeForm({ gauge, setGauge }) {
       {gauge ? (
         <TipCard tone="sage" emoji="✅">
           Tu tensión real: <strong>{gauge.stPer10cm} puntos</strong> y <strong>{gauge.rowsPer10cm} vueltas</strong> cada 10cm.
-        </TipCard>
-      ) : null}
-    </div>
-  )
-}
-
-function EstimatedGaugeForm({ gauge, setGauge }) {
-  const [inputType, setInputType] = useState('categoria')
-  const [category, setCategory] = useState(4)
-  const [meters, setMeters] = useState(180)
-
-  React.useEffect(() => {
-    const cat = inputType === 'categoria' ? category : weightCategoryFromMeters(Number(meters)).category
-    const est = estimateGaugeFromCategory(cat)
-    setGauge({
-      stPer10cm: est.stPer10cm,
-      rowsPer10cm: est.rowsPer10cm,
-      hookMm: est.hookMm,
-      category: cat,
-      estimate: est
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputType, category, meters])
-
-  return (
-    <div className="card space-y-4">
-      <div className="flex gap-2">
-        <button type="button" onClick={() => setInputType('categoria')} className={inputType === 'categoria' ? 'chip bg-yarn-dark text-white' : 'chip'}>Por categoría</button>
-        <button type="button" onClick={() => setInputType('metros')} className={inputType === 'metros' ? 'chip bg-yarn-dark text-white' : 'chip'}>Por metros/100g</button>
-      </div>
-      {inputType === 'categoria' ? (
-        <label className="text-sm font-semibold block">
-          Grosor del hilo
-          <select className="field mt-1" value={category} onChange={(e) => setCategory(Number(e.target.value))}>
-            {YARN_WEIGHTS.map((w) => (
-              <option key={w.category} value={w.category}>{w.category} — {w.name}</option>
-            ))}
-          </select>
-        </label>
-      ) : (
-        <label className="text-sm font-semibold block">
-          Metros por cada 100g del ovillo (lo pone en la etiqueta)
-          <input type="number" min="1" className="field mt-1" value={meters} onChange={(e) => setMeters(e.target.value)} />
-        </label>
-      )}
-      {gauge ? (
-        <TipCard tone="honey" emoji="⚡">
-          Tensión típica estimada: <strong>~{gauge.stPer10cm} puntos</strong> y <strong>~{gauge.rowsPer10cm} vueltas</strong> cada 10cm,
-          con un ganchillo de ~{gauge.hookMm}mm ({gauge.estimate.weight.name}).
         </TipCard>
       ) : null}
     </div>
@@ -178,7 +96,6 @@ function ResultFlat({ result }) {
 }
 
 export default function GanchilloCrear() {
-  const [mode, setMode] = useState('preciso')
   const [gauge, setGauge] = useState(null)
   const [project, setProject] = useState('gorro')
 
@@ -201,18 +118,9 @@ export default function GanchilloCrear() {
     return generateCowlPattern({ gauge, circumferenceCm: Number(cowlCircumference), heightCm: Number(cowlHeight) })
   }, [gauge, project, headCircumference, hatHeight, scarfWidth, scarfLength, cowlCircumference, cowlHeight])
 
-  const warning = buildGaugeWarning(mode)
-
   function handleSave() {
     if (!result) return
-    addPattern({
-      id: `${project}-${Date.now()}`,
-      project,
-      mode,
-      gauge,
-      result,
-      createdAt: Date.now()
-    })
+    addPattern({ id: `${project}-${Date.now()}`, project, mode: 'preciso', gauge, result, createdAt: Date.now() })
     setSaved(true)
     setTimeout(() => navigate('/favoritos'), 600)
   }
@@ -223,17 +131,11 @@ export default function GanchilloCrear() {
         title="Patrón de ganchillo para mi hilo"
         emoji="🪡"
         backTo="/ganchillo"
-        subtitle="Elige cómo calcular tu tensión: con una muestra real (100% fiable) o con una estimación rápida por grosor de hilo."
+        subtitle="Para que el patrón sea 100% fiable a tu hilo y a tu forma de tejer, se calcula siempre a partir de una muestra real de tensión — nunca de una estimación por grosor."
       />
 
       <div className="space-y-6">
-        <GaugeModePicker mode={mode} setMode={setMode} />
-
-        {mode === 'preciso' ? (
-          <PreciseGaugeForm gauge={gauge} setGauge={setGauge} />
-        ) : (
-          <EstimatedGaugeForm gauge={gauge} setGauge={setGauge} />
-        )}
+        <PreciseGaugeForm gauge={gauge} setGauge={setGauge} />
 
         <div className="card space-y-4">
           <div className="flex gap-2 flex-wrap">
@@ -289,8 +191,6 @@ export default function GanchilloCrear() {
           ) : null}
         </div>
 
-        {warning ? <TipCard tone="honey" emoji="⚠️">{warning}</TipCard> : null}
-
         {result ? (
           <div className="card">
             <h2 className="font-display text-xl font-semibold mb-3">Tu patrón</h2>
@@ -299,7 +199,11 @@ export default function GanchilloCrear() {
               {saved ? '✅ Guardado' : '💾 Guardar este patrón'}
             </button>
           </div>
-        ) : null}
+        ) : (
+          <TipCard tone="honey" emoji="🧵">
+            Rellena tu muestra real arriba (puntos y vueltas en 10cm) para generar el patrón.
+          </TipCard>
+        )}
       </div>
     </div>
   )

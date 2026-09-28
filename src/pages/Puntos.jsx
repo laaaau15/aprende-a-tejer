@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import { Link } from '../router'
 import { PageHeader, DifficultyStars, FavoriteButton, LearnedToggle, Collapsible, TipCard } from '../components/ui'
-import { STITCHES, findStitch } from '../data/stitches'
+import { StitchSwatch } from '../components/StitchSwatch'
+import { VideoEmbed } from '../components/VideoEmbed'
+import { STITCHES, findStitch, getSwatchKind } from '../data/stitches'
+import { findVideo } from '../data/videos'
 
 const CATEGORY_LABEL = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzado' }
 
@@ -23,16 +26,22 @@ export function PuntosList() {
           </button>
         ))}
       </div>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {list.map((s) => (
-          <Link key={s.id} to={`/puntos/${s.id}`} className="card hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <span className="font-bold">{s.name}</span>
-              <DifficultyStars n={s.difficulty} />
-            </div>
-            <p className="text-sm text-plum/70 mt-1">{s.summary}</p>
-          </Link>
-        ))}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {list.map((s) => {
+          const [kind, tone] = getSwatchKind(s.id)
+          return (
+            <Link key={s.id} to={`/puntos/${s.id}`} className="card overflow-hidden p-0 hover:shadow-lg hover:-translate-y-0.5 transition-all">
+              <StitchSwatch kind={kind} tone={tone} className="h-28 w-full" />
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold">{s.name}</span>
+                  <DifficultyStars n={s.difficulty} />
+                </div>
+                <p className="text-sm text-plum/70 mt-1">{s.summary}</p>
+              </div>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
@@ -41,11 +50,16 @@ export function PuntosList() {
 export function PuntoDetail({ params }) {
   const stitch = findStitch(params.id)
   if (!stitch) return <div className="p-8 text-center">No encontramos ese punto.</div>
+  const [kind, tone] = getSwatchKind(stitch.id)
+  const video = findVideo(stitch.id)
 
   return (
     <div>
       <PageHeader title={stitch.name} emoji="🧶" backTo="/puntos" subtitle={stitch.summary} />
-      <div className="flex gap-2 mb-6">
+
+      <StitchSwatch kind={kind} tone={tone} className="h-44 w-full rounded-2xl shadow-sm mb-4" />
+
+      <div className="flex gap-2 mb-6 flex-wrap">
         <FavoriteButton kind="stitch" id={stitch.id} />
         <LearnedToggle learnKey={stitch.id} />
       </div>
@@ -59,6 +73,14 @@ export function PuntoDetail({ params }) {
             </span>
           ))}
         </TipCard>
+      ) : null}
+
+      {video ? (
+        <div className="mt-6">
+          <h2 className="font-bold mb-2">🎬 Míralo en vídeo</h2>
+          <VideoEmbed videoId={video.videoId} title={video.title} />
+          <p className="text-xs text-plum/50 mt-1">{video.title} — {video.channel}</p>
+        </div>
       ) : null}
 
       {stitch.detail === 'full' ? (

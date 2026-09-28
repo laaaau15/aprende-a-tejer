@@ -12,11 +12,15 @@ export function PageHeader({ title, subtitle, emoji, backTo }) {
       {backTo ? (
         <Link to={backTo} className="text-sm text-plum/60 hover:text-yarn-dark">← Volver</Link>
       ) : null}
-      <h1 className="text-3xl font-display font-semibold mt-1">
-        {emoji ? <span className="mr-2">{emoji}</span> : null}
-        {title}
-      </h1>
-      {subtitle ? <p className="text-plum/70 mt-1">{subtitle}</p> : null}
+      <div className="flex items-center gap-3 mt-1">
+        {emoji ? (
+          <span className="w-11 h-11 shrink-0 rounded-2xl bg-white shadow-sm border border-oat flex items-center justify-center text-2xl">
+            {emoji}
+          </span>
+        ) : null}
+        <h1 className="text-3xl font-display font-semibold">{title}</h1>
+      </div>
+      {subtitle ? <p className="text-plum/70 mt-2">{subtitle}</p> : null}
     </header>
   )
 }

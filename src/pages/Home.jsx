@@ -13,8 +13,13 @@ export default function Home() {
 
   return (
     <div className="space-y-10">
-      <section className="text-center py-8">
-        <h1 className="text-4xl font-display font-semibold">Aprende a tejer desde cero 🧶</h1>
+      <section className="relative text-center py-14 -mx-4 px-4 hero-gradient rounded-b-[2.5rem] overflow-hidden">
+        <div className="blob absolute -top-10 -left-10 w-40 h-40 bg-yarn/20 blur-2xl" aria-hidden />
+        <div className="blob absolute -bottom-10 -right-6 w-48 h-48 bg-sage/20 blur-2xl" aria-hidden />
+        <span className="chip bg-white shadow-sm mb-4">🧶 Punto · 🪡 Ganchillo · Paso a paso</span>
+        <h1 className="text-4xl sm:text-5xl font-display font-semibold leading-tight">
+          Aprende a tejer <span className="text-gradient">desde cero</span> 🧶
+        </h1>
         <p className="mt-3 text-plum/70 max-w-xl mx-auto">
           Tu guía visual para aprender punto a dos agujas, agujas circulares y ganchillo, paso a paso y sin liarte.
         </p>
@@ -84,6 +89,7 @@ export default function Home() {
           <NavCard to="/aprender/calculadora" emoji="🧮" title="Calculadora de puntos" text="Calcula cuántos puntos montar según tu muestra." />
           <NavCard to="/diccionario" emoji="📚" title="Diccionario de punto" text="Abreviaturas, símbolos y equivalencias US/UK." />
           <NavCard to="/ganchillo/crear" emoji="🪡" title="Patrón de ganchillo para mi hilo" text="Tu hilo + cuello, bufanda o gorro = patrón paso a paso." />
+          <NavCard to="/mi-lana" emoji="🧶" title="¿Qué puedo hacer con mi lana?" text="Gramos + metros = qué prendas te da, agujas y ovillos que necesitas." />
         </div>
       </section>
     </div>
